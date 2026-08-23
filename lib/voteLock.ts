@@ -8,12 +8,20 @@ export function getVotedRoundId(group: Group): string | null {
   if (typeof window === "undefined") {
     return null;
   }
-  return window.localStorage.getItem(storageKey(group));
+  try {
+    return window.localStorage.getItem(storageKey(group));
+  } catch {
+    return null;
+  }
 }
 
 export function setVotedRoundId(group: Group, roundId: string): void {
   if (typeof window === "undefined") {
     return;
   }
-  window.localStorage.setItem(storageKey(group), roundId);
+  try {
+    window.localStorage.setItem(storageKey(group), roundId);
+  } catch {
+    // storage blocked; the vote already succeeded server-side, the lock is best-effort
+  }
 }

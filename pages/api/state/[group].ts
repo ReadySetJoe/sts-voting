@@ -16,5 +16,6 @@ export default async function handler(
     return;
   }
   const state = await getRoundState(group);
+  res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate=2");
   res.status(200).json(state);
 }

@@ -10,6 +10,7 @@ export function useLiveState(group: Group) {
 
   useEffect(() => {
     let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     async function poll() {
       try {
@@ -26,14 +27,17 @@ export function useLiveState(group: Group) {
         if (!cancelled) {
           setError("Unable to reach server");
         }
+      } finally {
+        if (!cancelled) {
+          timeoutId = setTimeout(poll, POLL_INTERVAL_MS);
+        }
       }
     }
 
     poll();
-    const id = setInterval(poll, POLL_INTERVAL_MS);
     return () => {
       cancelled = true;
-      clearInterval(id);
+      clearTimeout(timeoutId);
     };
   }, [group]);
 

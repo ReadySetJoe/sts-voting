@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { isGroup } from "@/lib/groups";
-import { saveRoundState } from "@/lib/store";
-import { createRound, isValidSlotCount } from "@/lib/round";
+import { startNewRound } from "@/lib/store";
+import { isValidSlotCount } from "@/lib/round";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,7 +21,6 @@ export default async function handler(
     res.status(400).json({ error: "invalid_slot_count" });
     return;
   }
-  const fresh = createRound(slotCount);
-  await saveRoundState(group, fresh);
+  const fresh = await startNewRound(group, slotCount);
   res.status(200).json(fresh);
 }

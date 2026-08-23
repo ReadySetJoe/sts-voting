@@ -7,6 +7,7 @@ import { THEMES, SLOT_LABELS } from "@/lib/theme";
 export default function VotePage({ group }: { group: Group }) {
   const { state, error } = useLiveState(group);
   const [pending, setPending] = useState(false);
+  const [voteError, setVoteError] = useState<string | null>(null);
   const theme = THEMES[group];
 
   const votedRoundId = state ? getVotedRoundId(group) : null;
@@ -17,6 +18,7 @@ export default function VotePage({ group }: { group: Group }) {
       return;
     }
     setPending(true);
+    setVoteError(null);
     try {
       const res = await fetch(`/api/vote/${group}`, {
         method: "POST",
@@ -25,7 +27,11 @@ export default function VotePage({ group }: { group: Group }) {
       });
       if (res.ok) {
         setVotedRoundId(group, state.roundId);
+      } else if (res.status !== 409) {
+        setVoteError("Vote didn't register — try again");
       }
+    } catch {
+      setVoteError("Vote didn't register — try again");
     } finally {
       setPending(false);
     }
@@ -44,6 +50,7 @@ export default function VotePage({ group }: { group: Group }) {
       </h1>
       <p className="text-lg opacity-80">{theme.tagline}</p>
       {error && <p className="text-red-400">{error}</p>}
+      {voteError && <p className="text-red-400">{voteError}</p>}
       {!state ? (
         <p>Loading...</p>
       ) : locked ? (
