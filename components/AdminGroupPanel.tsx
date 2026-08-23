@@ -54,7 +54,7 @@ export default function AdminGroupPanel({ group }: { group: Group }) {
           id={`${group}-slots`}
           value={slotCount}
           onChange={(e) => setSlotCount(Number(e.target.value))}
-          className="rounded border px-2 py-1 text-black"
+          className="rounded border bg-white px-2 py-1 text-black"
         >
           <option value={2}>2</option>
           <option value={3}>3</option>
